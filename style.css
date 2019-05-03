@@ -17,11 +17,19 @@
 html, body {
 	font-family: Montserrat;
 	overflow-x: hidden;
+	margin: 0;
+	background-color: var(--bkg);
 }
 
 div#wiper {
-	opacity: 0 !important;
-	z-index: -1 !important;
+	display: block;
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	background-color: #121B18;
+	transition: .5s opacity .5s, .5s z-index .5s;
+	opacity: 0;
+	z-index: -1;
 }
 
 body > div#main {

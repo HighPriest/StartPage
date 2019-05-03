@@ -33,50 +33,26 @@
 
 // div.innerHTML : {a.innerHTML : a.href}
 var sites = {
-			"Chan": {
-				"4/wsg/"			: "https://boards.4chan.org/wsg/",
-				"4/b/"				: "https://boards.4chan.org/b/",
-				"4/sci/"			: "https://boards.4chan.org/sci/",
-				"8/b/"				: "https://8ch.net/b/index.html"
-			},
-			"Social": {
-				"GitLab"			: "https://gitlab.com/Capuno",
-				"Racó Català"		: "https://www.racocatala.cat/forums",
+			"Social daily": {
+				"Facebook"			: "https://facebook.com/",
 				"YouTube"			: "https://www.youtube.com/",
-				"Twitter"			: "https://twitter.com/"
-			},
-			"E-Mail": {
-				"GMail"				: "https://mail.google.com/mail/u/0/",
-				"Hotmail"			: "https://outlook.live.com/owa/",
-				"Zoho Mail"			: "https://mail.zoho.eu/zm/#mail/folder/inbox"
-			},
-			"Games": { // To find the game ID check the url in the store page or the community page
-				"CS:GO"				: "steam://run/730",
-				"Besiege"			: "steam://run/346010",
-				"Rust"				: "steam://run/252490",
-				"Insurgency"		: "steam://run/222880",
-				"West of Loathing"	: "steam://run/597220",
-				"POSTAL 2"			: "steam://run/223470"
-			},
-			"News": {
-				"Financial Times"	: "https://www.ft.com/",
-				"Vilaweb"			: "https://www.vilaweb.cat/",
-				"El Punt Avui"		: "http://www.elpuntavui.cat/barcelona.html"
-			},
-			"My stuff": {
-				"capuno.cat"		: "https://capuno.cat/",
-				"gnu.cat"			: "https://gnu.cat/",
-				"life"				: "https://life.capuno.cat/",
-				"rice"				: "https://rice.capuno.cat/"
+				"Reddit"			: "https://reddit.com/",
+				"9gag"				: "https://9gag.com/"
 			}
 		};
 
-var search = "https://duckduckgo.com/";		// The search engine
+var search = "https://www.google.com/search";		// The search engine
 var query  = "q";							// The query variable name for the search engine
 
 var pivotmatch = 0;
 var totallinks = 0;
 var prevregexp = "";
+
+function is_url(str)
+{
+	regexp =  /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+	return regexp.test(str)
+}
 
 // ---------- BUILD PAGE ----------
 function matchLinks(regex = prevregexp) {
@@ -84,9 +60,9 @@ function matchLinks(regex = prevregexp) {
 	pivotmatch = regex == prevregexp ? pivotmatch : 0;
 	prevregexp = regex;
 	pivotbuffer = pivotmatch;
-	p = document.getElementById("links");
-	while (p.firstChild) {
-		p.removeChild(p.firstChild);
+	links = document.getElementById("links");
+	while (links.firstChild) {
+		links.removeChild(links.firstChild);
 	}
 	match = new RegExp(regex ? regex : ".", "i");
 	gmatches = false; // kinda ugly, rethink
@@ -116,11 +92,17 @@ function matchLinks(regex = prevregexp) {
 			}
 		}
 		section.appendChild(inner);
-		matches ? p.appendChild(section) : false;
+		matches ? links.appendChild(section) : false;
 	}
-	if (!gmatches || regex == "") {
+	console.log('query', regex);
+	console.log('gmatches', gmatches);
+	if ((!gmatches || regex == "") && !is_url(regex)) {
 		document.getElementById("action").action = search;
 		document.getElementById("action").children[0].name = query;
+	}
+	else if ((!gmatches || regex == "") && is_url(regex)) {
+		document.getElementById("action").action = "https://" + regex;
+		document.getElementById("action").children[0].removeAttribute("name");
 	}
 	document.getElementById("main").style.height = document.getElementById("main").children[0].offsetHeight+"px";
 }
